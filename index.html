@@ -167,12 +167,12 @@ const W=['TSLA','AMD','INTC','CRM','ORCL','ADBE','NOW','SNOW','PLTR','UBER',
   'LYFT','ABNB','DASH','COIN','RBLX','HOOD','SOFI','AFRM','UPST','LCID',
   'RIVN','F','GM','TM','NIO','LI','XPEV','ON','MRVL',
   'QCOM','TXN','AVGO','MU','LRCX','AMAT','KLAC','ASML','TSM','SMCI',
-  'DELL','HPQ','IBM','ACN','INFY','WIT','CTSH','DDOG','CRWD',
+  'DELL','HPQ','IBM','ACN','INFY','CTSH','DDOG','CRWD',
   'ZS','OKTA','PANW','FTNT','NET','CFLT','MDB','HUBS','TEAM',
-  'ZM','DOCU','DBX','BOX','WDAY','ADSK','ANSS','CDNS','KEYS',
+  'ZM','DOCU','WDAY','ADSK','ANSS','CDNS',
   'BA','GD','NOC','HII','AXON','CACI','SAIC','LDOS',
-  'PXD','DVN','OXY','EOG','MPC','VLO','PSX','HES','APA',
-  'GOLD','NEM','FCX','AA','X','NUE','CLF','BTC-USD','ETH-USD','GLD','SLV'];
+  'PXD','DVN','OXY','EOG','MPC','VLO','PSX','HES',
+  'GOLD','NEM','FCX','AA','X','NUE','CLF','GLD','SLV'];
 const SA=[
   {n:'Technology',p:31.63,v:517050,c:'#0984e3'},{n:'Industrials',p:16.50,v:269423,c:'#00b894'},
   {n:'Financial',p:15.54,v:253718,c:'#6c5ce7'},{n:'Energy',p:5.69,v:92972,c:'#e17055'},
@@ -203,15 +203,27 @@ async function fq(syms){
   const ch=[];
   for(let i=0;i<syms.length;i+=8)ch.push(syms.slice(i,i+8));
   for(const c of ch){
-    try{
-      const yfUrl='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+encodeURIComponent(c.join(','))+'&fields=regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketPreviousClose,shortName,regularMarketVolume,fiftyTwoWeekHigh,fiftyTwoWeekLow';
-      const proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(yfUrl);
-      const r=await fetch(proxyUrl);
-      const outer=await r.json();
-      const d=JSON.parse(outer.contents);
-      if(d.quoteResponse&&d.quoteResponse.result)for(const q of d.quoteResponse.result)res[q.symbol]=q;
-    }catch(e){console.warn('fetch err',e);}
-    await new Promise(r=>setTimeout(r,200));
+    const base='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+encodeURIComponent(c.join(','))+'&fields=regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketPreviousClose,shortName,regularMarketVolume,fiftyTwoWeekHigh,fiftyTwoWeekLow';
+    const urls=[
+      'https://api.allorigins.win/get?url='+encodeURIComponent(base),
+      'https://corsproxy.io/?'+encodeURIComponent(base),
+      'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(base)
+    ];
+    let got=false;
+    for(const url of urls){
+      if(got)break;
+      try{
+        const r=await fetch(url,{headers:{Accept:'application/json'}});
+        if(!r.ok)continue;
+        const raw=await r.json();
+        const d=raw.contents?JSON.parse(raw.contents):(typeof raw==='string'?JSON.parse(raw):raw);
+        if(d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result.length){
+          for(const q of d.quoteResponse.result)res[q.symbol]=q;
+          got=true;
+        }
+      }catch(e){}
+    }
+    await new Promise(r=>setTimeout(r,150));
   }
   return res;
 }
@@ -230,10 +242,10 @@ function rWh(Q){const top=W.map(t=>({t,q:Q[t],cp:Q[t]?(Q[t].regularMarketChangeP
 
 function rRec(Q){
   const rs=[];
-  for(const h of H){const q=Q[h.t];if(!q)continue;const c=q.regularMarketChangePercent||0,p=q.regularMarketPrice,l=q.fiftyTwoWeekLow||0,hi=q.fiftyTwoWeekHigh||p;const pfh=((hi-p)/hi)*100;if(c<-3&&pfh>20)rs.push({t:h.t,a:'BUY DIP',cl:'g',d:`Down ${Math.abs(c).toFixed(1)}% today, ${pfh.toFixed(0)}% off 52w high. Accumulation opportunity.`});else if(pfh<3&&c>1)rs.push({t:h.t,a:'TAKE PROFIT',cl:'o',d:`Near 52-week high. Up ${c.toFixed(1)}% today. Consider trimming.`});if(rs.length>=4)break;}
-  if(rs.length===0)rs.push({t:'PORTFOLIO',a:'REVIEW',cl:'b',d:'Market stable. Review largest positions and rebalance if sector weights have drifted.'});
+  for(const h of H){const q=Q[h.t];if(!q)continue;const c=q.regularMarketChangePercent||0,p=q.regularMarketPrice,l=q.fiftyTwoWeekLow||0,hi=q.fiftyTwoWeekHigh||p;const pfh=((hi-p)/hi)*100;if(c<-3&&pfh>20)rs.push({t:h.t,a:'BUY DIP',cl:'g',d:`Down ${Math.abs(c).toFixed(1)}% today, ${pfh.toFixed(0)}% off 52w high.`});else if(pfh<3&&c>1)rs.push({t:h.t,a:'TAKE PROFIT',cl:'o',d:`Near 52w high. Up ${c.toFixed(1)}% today. Consider trimming.`});if(rs.length>=4)break;}
+  if(rs.length===0)rs.push({t:'PORTFOLIO',a:'REVIEW',cl:'b',d:'Market stable. Review largest positions and rebalance if weights have drifted.'});
   const bc={g:'buy',o:'sell',b:'wtch'};
-  document.getElementById('recs').innerHTML=rs.map(r=>`<div style="background:white;border-radius:8px;padding:12px;border-top:3px solid ${r.cl==='g'?'#00b894':r.cl==='o'?'#e17055':'#0984e3'};margin-bottom:10px"><div><b>${r.t}</b> <span class="bdg ${bc[r.cl]}">${r.a}</span></div><div style="font-size:.78rem;color:#636e72;margin-top:6px;line-height:1.5">${r.d}</div></div>`).join('');
+  document.getElementById('recs').innerHTML=rs.map(r=>`<div style="border-radius:8px;padding:12px;border-top:3px solid ${r.cl==='g'?'#00b894':r.cl==='o'?'#e17055':'#0984e3'};margin-bottom:10px;background:#f9f9fb"><div><b>${r.t}</b> <span class="bdg ${bc[r.cl]}">${r.a}</span></div><div style="font-size:.78rem;color:#636e72;margin-top:6px;line-height:1.5">${r.d}</div></div>`).join('');
 }
 
 function rRisk(Q){
@@ -241,21 +253,21 @@ function rRisk(Q){
   if(vx)as.push({l:vx.regularMarketPrice>25?'h':vx.regularMarketPrice>18?'m':'l',m:`VIX at ${f(vx.regularMarketPrice)} — ${vx.regularMarketPrice>25?'Elevated volatility. Consider defensive positions.':vx.regularMarketPrice>18?'Moderate volatility. Monitor closely.':'Market calm. Favorable conditions.'}`});
   if(sp&&sp.regularMarketChangePercent<-1.5)as.push({l:'h',m:`S&P 500 down ${Math.abs(sp.regularMarketChangePercent).toFixed(1)}% today. Tech-heavy portfolio under pressure.`});
   as.push({l:'m',m:'Tech at 31.63% of portfolio — above 25% recommended max. Consider trimming tech on strength.'});
-  as.push({l:'l',m:'529 plans ($190K) are growing. Review age-based allocation annually.'});
+  as.push({l:'l',m:'529 plans ($190K) growing. Review age-based allocation annually for each beneficiary.'});
   const bg={h:'#fadbd8',m:'#fdebd0',l:'#d4efdf'},tc={h:'#c0392b',m:'#e67e22',l:'#1e8449'},ic={h:'⚠️',m:'📊',l:'✅'};
   document.getElementById('ral').innerHTML=as.map(a=>`<div style="background:${bg[a.l]};color:${tc[a.l]};padding:10px 14px;border-radius:8px;margin-bottom:8px;font-size:.8rem;line-height:1.5">${ic[a.l]} ${a.m}</div>`).join('');
 }
 
 function rTk(Q){
   const tks=[...H.slice(0,10).map(h=>h.t),'^GSPC','^DJI','^IXIC'];
-  const items=tks.map(t=>{const q=Q[t];if(!q)return'';const c=q.regularMarketChangePercent||0;return`<span class="${cc(c)}">${t}: $${f(q.regularMarketPrice)} ${c>=0?'▲':'▼'} ${cs(c)}</span>`;}).filter(Boolean).join('');
-  document.getElementById('tkc').innerHTML=items+' &nbsp;&nbsp;&nbsp; '+items;
+  const items=tks.map(t=>{const q=Q[t];if(!q)return'';const c=q.regularMarketChangePercent||0;return`<span class="${cc(c)}">${t}: $${f(q.regularMarketPrice)} ${c>=0?'&#9650;':'&#9660;'} ${cs(c)}</span>`;}).filter(Boolean).join('');
+  if(items)document.getElementById('tkc').innerHTML=items+'&nbsp;&nbsp;&nbsp;&nbsp;'+items;
 }
 
 function rCharts(Q){
   new Chart(document.getElementById('ac').getContext('2d'),{type:'doughnut',data:{labels:SA.map(s=>s.n),datasets:[{data:SA.map(s=>s.p),backgroundColor:SA.map(s=>s.c),borderWidth:2,borderColor:'white'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:9},boxWidth:10}}}}});
   const ids=IDX.filter(i=>Q[i.s]).map(i=>({n:i.n,c:Q[i.s].regularMarketChangePercent||0}));
-  if(ids.length)new Chart(document.getElementById('mc').getContext('2d'),{type:'bar',data:{labels:ids.map(i=>i.n),datasets:[{label:'Day %',data:ids.map(i=>parseFloat(i.c.toFixed(2))),backgroundColor:ids.map(i=>i.c>=0?'#00b89480':'#e1705580'),borderColor:ids.map(i=>i.c>=0?'#00b894':'#e17055'),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
+  if(ids.length>0)new Chart(document.getElementById('mc').getContext('2d'),{type:'bar',data:{labels:ids.map(i=>i.n),datasets:[{label:'Day %',data:ids.map(i=>parseFloat(i.c.toFixed(2))),backgroundColor:ids.map(i=>i.c>=0?'#00b89480':'#e1705580'),borderColor:ids.map(i=>i.c>=0?'#00b894':'#e17055'),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'%'}}}}});
 }
 
 function rHmap(Q){document.getElementById('shm').innerHTML=Object.entries(SETF).map(([nm,sym])=>{const q=Q[sym];const c=q?(q.regularMarketChangePercent||0):0;const ity=Math.min(Math.abs(c)/3,1);const bg=c>=0?`rgba(0,184,148,${.15+ity*.65})`:`rgba(225,112,85,${.15+ity*.65})`;const tc=Math.abs(c)>1.5?'white':c>=0?'#1e8449':'#c0392b';return`<div class="hcell" style="background:${bg};color:${tc}"><div class="hcn">${nm}</div><div class="hcp">${q?cs(c):'--'}</div></div>`;}).join('');}
@@ -265,14 +277,14 @@ function ft(){const q=document.getElementById('srch').value.toLowerCase();const 
 
 async function init(){
   const now=new Date();
-  document.getElementById('lu').textContent='⏳ Loading market data...';
+  document.getElementById('lu').textContent='Loading...';
   document.getElementById('ftt').textContent='Last loaded: '+now.toLocaleString();
   rSA();
   const allSym=[...new Set([...H.map(h=>h.t),...IDX.map(i=>i.s),...Object.values(SETF),...W])];
-  document.getElementById('lu').textContent='⏳ Fetching '+allSym.length+' symbols...';
+  document.getElementById('lu').textContent='Fetching '+allSym.length+' symbols...';
   const Q=await fq(allSym);
   const cnt=Object.keys(Q).length;
-  document.getElementById('lu').textContent='✅ '+cnt+' quotes · '+now.toLocaleTimeString();
+  document.getElementById('lu').textContent=(cnt>0?'✅':'⚠️')+' '+cnt+' quotes loaded &middot; '+now.toLocaleTimeString();
   const sp=Q['^GSPC'];
   if(sp){const c=sp.regularMarketChangePercent||0;document.getElementById('tc').innerHTML='<span class="'+cc(c)+'">Market '+cs(c)+' today</span>';document.getElementById('ss').innerHTML='S&P: <span class="'+cc(c)+'">'+cs(c)+'</span>';}
   rTk(Q);rIdx(Q);rH(Q);rW(Q);rMv(Q);rWh(Q);rRec(Q);rRisk(Q);rCharts(Q);rHmap(Q);
