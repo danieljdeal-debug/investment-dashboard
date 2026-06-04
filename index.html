@@ -6,59 +6,59 @@
 <title>Jeremy Deal — Investment Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;font-size:13px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#1a1a2e;font-size:15px}
 .hdr{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
-.hdr h1{font-size:18px;font-weight:700}.hdr .meta{font-size:11px;opacity:.8;text-align:right}
-.tkbar{background:#0f3460;color:#fff;padding:5px 0;overflow:hidden;white-space:nowrap}
-.tki{display:inline-block;animation:tkr 90s linear infinite;padding-left:100%}
-.tki span{margin:0 18px;font-size:11px}@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.hdr h1{font-size:20px;font-weight:700}.hdr .meta{font-size:13px;opacity:.8;text-align:right}
+
+
+
 .up{color:#00c851}.dn{color:#ff4444}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid #e8e8e8}
 .kpi{background:#f8f9fb;border-radius:8px;padding:10px 12px;border-left:4px solid #0f3460}
-.kpi .lb{font-size:10px;text-transform:uppercase;color:#666;letter-spacing:.5px}
-.kpi .vl{font-size:17px;font-weight:700;margin:2px 0}.kpi .sb{font-size:11px}
-.main{display:grid;grid-template-columns:1fr 300px;gap:10px;padding:10px 14px}
+.kpi .lb{font-size:12px;text-transform:uppercase;color:#666;letter-spacing:.5px}
+.kpi .vl{font-size:19px;font-weight:700;margin:2px 0}.kpi .sb{font-size:13px}
+.main{display:grid;grid-template-columns:1fr 300px;gap:10px;padding:10px 14px}h
 .left{display:flex;flex-direction:column;gap:10px}.right{display:flex;flex-direction:column;gap:10px}
 .card{background:#fff;border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.07);overflow:hidden}
-.ch{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:12px}
+.ch{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px}
 table{width:100%;border-collapse:collapse}
-th{background:#f5f6fa;padding:6px 8px;font-size:11px;text-align:left;font-weight:600;color:#444;border-bottom:2px solid #e0e0e0;white-space:nowrap}
-td{padding:5px 8px;border-bottom:1px solid #f0f0f0;font-size:11px;white-space:nowrap}
+th{background:#f5f6fa;padding:6px 8px;font-size:13px;text-align:left;font-weight:600;color:#444;border-bottom:2px solid #e0e0e0;white-space:nowrap}
+td{padding:5px 8px;border-bottom:1px solid #f0f0f0;font-size:13px;white-space:nowrap}
 tr:hover td{background:#f7f9ff}
-.sym{font-weight:700;color:#0f3460;font-size:12px}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
-.ptabs{display:flex;gap:3px}.ptab{padding:3px 9px;cursor:pointer;font-size:11px;font-weight:600;border-radius:3px;background:#f0f0f0;color:#666;border:none;cursor:pointer}
+.sym{font-weight:700;color:#0f3460;font-size:14px}a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+.ptabs{display:flex;gap:3px}.ptab{padding:3px 9px;cursor:pointer;font-size:13px;font-weight:600;border-radius:3px;background:#f0f0f0;color:#666;border:none;cursor:pointer}
 .ptab.ac{background:#0f3460;color:#fff}
-.sw{padding:7px 12px;border-bottom:1px solid #f0f0f0}.sw input{width:100%;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:11px}
+.sw{padding:7px 12px;border-bottom:1px solid #f0f0f0}.sw input{width:100%;padding:4px 8px;border:1px solid #ddd;border-radius:5px;font-size:13px}
 .rbar{position:relative;width:70px;height:5px;background:#eee;border-radius:3px;display:inline-block;vertical-align:middle}
 .rdot{position:absolute;top:-4px;width:11px;height:11px;background:#0f3460;border-radius:50%;transform:translateX(-50%)}
-.s-buy{background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700}
-.s-sell{background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700}
-.s-hold{background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700}
+.s-buy{background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:12px;font-weight:700}
+.s-sell{background:#ffebee;color:#c62828;padding:1px 6px;border-radius:3px;font-size:12px;font-weight:700}
+.s-hold{background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:3px;font-size:12px;font-weight:700}
 .sbar{display:flex;align-items:center;gap:6px;padding:3px 12px;border-bottom:1px solid #f5f5f5}
-.sn{font-size:10px;width:90px;color:#444;font-weight:600}.str{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
-.sf{height:8px;border-radius:4px}.sv{font-size:10px;color:#666;width:55px;text-align:right}
+.sn{font-size:12px;width:90px;color:#444;font-weight:600}.str{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.sf{height:8px;border-radius:4px}.sv{font-size:12px;color:#666;width:55px;text-align:right}
 .mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 12px}
 .mv-item{padding:7px 8px;background:#f8f9fb;border-radius:6px;border-left:3px solid}
 .idx-row{padding:8px 12px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .idx-card{padding:8px;border-radius:6px;background:#f8f9fb;text-align:center}
-.idx-nm{font-size:9px;color:#666;font-weight:700;text-transform:uppercase}
-.idx-p{font-size:13px;font-weight:700;margin:2px 0}.idx-c{font-size:11px;font-weight:600}
+.idx-nm{font-size:11px;color:#666;font-weight:700;text-transform:uppercase}
+.idx-p{font-size:15px;font-weight:700;margin:2px 0}.idx-c{font-size:13px;font-weight:600}
 .mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px 12px}
-.mkt-sec .mkt-ttl{font-size:11px;font-weight:700;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid #e0e0e0}
-.mkt-row{display:flex;justify-content:space-between;padding:3px 4px;border-radius:3px;font-size:11px}
+.mkt-sec .mkt-ttl{font-size:13px;font-weight:700;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid #e0e0e0}
+.mkt-row{display:flex;justify-content:space-between;padding:3px 4px;border-radius:3px;font-size:13px}
 .mkt-row:hover{background:#f7f9ff}.mkt-s{font-weight:700;color:#0f3460;min-width:45px}
 .mkt-n{color:#555;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ri{padding:6px 12px;border-left:3px solid;margin:3px 8px;font-size:11px;border-radius:0 4px 4px 0}
+.ri{padding:6px 12px;border-left:3px solid;margin:3px 8px;font-size:13px;border-radius:0 4px 4px 0}
 .ri-h{border-color:#ff4444;background:#fff8f8}.ri-m{border-color:#ffa500;background:#fffaf0}.ri-l{border-color:#00c851;background:#f0fff4}
 @media(max-width:1000px){.main{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 <div class="hdr">
-  <div><h1>📈 Jeremy Deal — Investment Dashboard</h1><div style="font-size:11px;opacity:.7;margin-top:2px">RJ Profit Sharing · 529 Plans · 97-Stock Watchlist</div></div>
-  <div class="meta"><div id="clk" style="font-size:15px;font-weight:700"></div><div>Data: June 3, 2026</div><div style="margin-top:3px"><button onclick="location.reload()" style="background:#e94560;color:#fff;border:none;padding:3px 10px;border-radius:3px;cursor:pointer;font-size:11px">⟳ Refresh</button></div></div>
+  <div><h1>📈 Jeremy Deal — Investment Dashboard</h1><div style="font-size:13px;opacity:.7;margin-top:2px">RJ Profit Sharing · 529 Plans · 97-Stock Watchlist</div></div>
+  <div class="meta"><div id="clk" style="font-size:15px;font-weight:700"></div><div>Data: June 3, 2026</div><div style="margin-top:3px"><button onclick="location.reload()" style="background:#e94560;color:#fff;border:none;padding:3px 10px;border-radius:3px;cursor:pointer;font-size:13px">⟳ Refresh</button></div></div>
 </div>
-<div class="tkbar"><div class="tki" id="tkr"></div></div>
+
 <div class="kpis">
   <div class="kpi" style="border-color:#0f3460"><div class="lb">Total Portfolio</div><div class="vl" id="k-tot">$1,628,344</div><div class="sb" id="k-day">—</div></div>
   <div class="kpi" style="border-color:#00c851"><div class="lb">RJ Holdings (46)</div><div class="vl">$1,434,363</div><div class="sb" style="color:#666">+4 529 plans</div></div>
@@ -166,10 +166,10 @@ function rW(){
     return '<tr><td class="sym"><a href="https://finance.yahoo.com/quote/'+w.s+'" target="_blank">'+w.s+'<\/a><\/td>'
       +'<td style="font-weight:600">'+fmt(w.p)+'<\/td>'
       +'<td>'+pc(p)+'<\/td>'
-      +'<td style="color:#888;font-size:10px">'+fmt(w.l5)+'<\/td>'
-      +'<td style="color:#888;font-size:10px">'+fmt(w.h5)+'<\/td>'
+      +'<td style="color:#888;font-size:12px">'+fmt(w.l5)+'<\/td>'
+      +'<td style="color:#888;font-size:12px">'+fmt(w.h5)+'<\/td>'
       +'<td>'+sig(w)+'<\/td>'
-      +'<td style="color:#666;font-size:10px">'+w.sector+'<\/td><\/tr>';
+      +'<td style="color:#666;font-size:12px">'+w.sector+'<\/td><\/tr>';
   }).join('');
 }
 
@@ -211,17 +211,17 @@ function rMo(period){
   const srt=[...HD].filter(h=>h.v>0).sort((a,b)=>parseFloat(gP(b,p)||0)-parseFloat(gP(a,p)||0));
   const gainers=srt.slice(0,5);
   const losers=[...srt].sort((a,b)=>parseFloat(gP(a,p)||0)-parseFloat(gP(b,p)||0)).slice(0,5);
-  const mk=(arr,color)=>arr.map(h=>{const v=parseFloat(gP(h,p)||0);return '<div class="mv-item" style="border-color:'+color+';margin-bottom:5px"><div style="display:flex;justify-content:space-between"><span class="sym">'+h.s+'<\/span><span style="color:'+color+';font-weight:700">'+(v>=0?'+':'')+v.toFixed(2)+'%<\/span><\/div><div style="font-size:10px;color:#888">'+h.name.substring(0,22)+'<\/div><\/div>';}).join('');
-  document.getElementById('mo').innerHTML='<div><div style="font-size:10px;font-weight:700;color:#00c851;margin-bottom:3px">📈 Top Gainers<\/div>'+mk(gainers,'#00c851')+'<\/div><div><div style="font-size:10px;font-weight:700;color:#ff4444;margin-bottom:3px">📉 Top Losers<\/div>'+mk(losers,'#ff4444')+'<\/div>';
+  const mk=(arr,color)=>arr.map(h=>{const v=parseFloat(gP(h,p)||0);return '<div class="mv-item" style="border-color:'+color+';margin-bottom:5px"><div style="display:flex;justify-content:space-between"><span class="sym">'+h.s+'<\/span><span style="color:'+color+';font-weight:700">'+(v>=0?'+':'')+v.toFixed(2)+'%<\/span><\/div><div style="font-size:12px;color:#888">'+h.name.substring(0,22)+'<\/div><\/div>';}).join('');
+  document.getElementById('mo').innerHTML='<div><div style="font-size:12px;font-weight:700;color:#00c851;margin-bottom:3px">📈 Top Gainers<\/div>'+mk(gainers,'#00c851')+'<\/div><div><div style="font-size:12px;font-weight:700;color:#ff4444;margin-bottom:3px">📉 Top Losers<\/div>'+mk(losers,'#ff4444')+'<\/div>';
 }
 
 function rRec(){
   const strong=HD.filter(h=>parseFloat(h.tp||0)>2||parseFloat(h.yp||0)>20).sort((a,b)=>parseFloat(b.yp||0)-parseFloat(a.yp||0));
   const weak=HD.filter(h=>parseFloat(h.tp||0)<-3||parseFloat(h.yp||0)<-10).sort((a,b)=>parseFloat(a.yp||0)-parseFloat(b.yp||0));
   let html='';
-  if(strong.length)html+='<div style="margin-bottom:6px"><div style="font-size:10px;font-weight:700;color:#2e7d32;margin:3px 0">💚 Performing Well — Consider HOLD/TRIM<\/div>'+strong.slice(0,5).map(h=>'<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid #f5f5f5"><span class="sym" style="min-width:45px">'+h.s+'<\/span><span class="s-buy">HOLD<\/span><span class="up" style="font-size:11px">'+pf(h.tp)+'<\/span><span style="color:#666;font-size:10px">YTD:'+pf(h.yp)+'<\/span><\/div>').join('')+'<\/div>';
-  if(weak.length)html+='<div><div style="font-size:10px;font-weight:700;color:#c62828;margin:3px 0">❤️ Under Pressure — Review Position<\/div>'+weak.slice(0,5).map(h=>'<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid #f5f5f5"><span class="sym" style="min-width:45px">'+h.s+'<\/span><span class="s-sell">REVIEW<\/span><span class="dn" style="font-size:11px">'+pf(h.tp)+'<\/span><span style="color:#666;font-size:10px">YTD:'+pf(h.yp)+'<\/span><\/div>').join('')+'<\/div>';
-  document.getElementById('rc').innerHTML=html||'<div style="color:#888;padding:8px;font-size:11px">No major signals today.<\/div>';
+  if(strong.length)html+='<div style="margin-bottom:6px"><div style="font-size:12px;font-weight:700;color:#2e7d32;margin:3px 0">💚 Performing Well — Consider HOLD/TRIM<\/div>'+strong.slice(0,5).map(h=>'<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid #f5f5f5"><span class="sym" style="min-width:45px">'+h.s+'<\/span><span class="s-buy">HOLD<\/span><span class="up" style="font-size:13px">'+pf(h.tp)+'<\/span><span style="color:#666;font-size:12px">YTD:'+pf(h.yp)+'<\/span><\/div>').join('')+'<\/div>';
+  if(weak.length)html+='<div><div style="font-size:12px;font-weight:700;color:#c62828;margin:3px 0">❤️ Under Pressure — Review Position<\/div>'+weak.slice(0,5).map(h=>'<div style="display:flex;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid #f5f5f5"><span class="sym" style="min-width:45px">'+h.s+'<\/span><span class="s-sell">REVIEW<\/span><span class="dn" style="font-size:13px">'+pf(h.tp)+'<\/span><span style="color:#666;font-size:12px">YTD:'+pf(h.yp)+'<\/span><\/div>').join('')+'<\/div>';
+  document.getElementById('rc').innerHTML=html||'<div style="color:#888;padding:8px;font-size:13px">No major signals today.<\/div>';
 }
 
 function rRisk(){
@@ -259,7 +259,7 @@ function updKPI(){
 function clk(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
 window.addEventListener('load',()=>{
-  rTkr();updKPI();rI('1d');rH();rW();rMv();rSect();rMo('1d');rRec();rRisk();
+  updKPI();rI('1d');rH();rW();rMv();rSect();rMo('1d');rRec();rRisk();loadPerfChart('1mo',document.querySelector('#pftp .ptab'));
   setInterval(clk,1000);clk();
 });
 </script>
